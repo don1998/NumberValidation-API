@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="apple-touch-icon" sizes="120x120" href="~/Content/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="~/Content/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="~/Content/favicon-16x16.png" />
+    <link rel="manifest" href="img/manifest.json" />
+    <link rel="mask-icon" href="~/Content/safari-pinned-tab.svg" color="#5bbad5" />
+    <link rel="stylesheet" href="~/Content/main.css" type="text/css" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="viewport" content="width=device-width, initial-scale =1.0" />
+    <title>Validation API</title>
+</head>
+<body>
+    <div class="loginSection">
+        <form method="post" action="@Url.Action("Verify", "Home")">
+            <img src="~/Content/logo.png" alt="Logo" width="288px" height="68px">
+            <br />
+            <br />
+            <p>
+                <strong>Login Below</strong>
+            </p>
+            <br />
+            <hr />
+            <br />
+            <input type="text" name="username" id="userName" required />
+            <label for="userNamename">Username</label>
+
+            <div class='divider'></div>
+
+            <input type="password" name="password" required />
+            <label for="pWord">Password</label>
+            <br />
+            <input type="submit" value="Login">
+            <br />
+            <div>
+                <font color="red">
+                    @ViewBag.Message
+                </font>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,192 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="apple-touch-icon" sizes="120x120" href="~/Content/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="~/Content/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="~/Content/favicon-16x16.png" />
+    <link rel="manifest" href="~/Content/manifest.json" />
+    <link rel="mask-icon" href="~/Content/safari-pinned-tab.svg" color="#5bbad5" />
+    <link rel="stylesheet" href="~/Content/phoneNumberValidation.css" />
+    <meta name="viewport" content="width=device-width, intial-scale=1.0" />
+    <title>Validation API</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="formSection">
+            <img src="~/Content/logo.png" alt="Logo" width="288px" height="68px" />
+            <br />
+            <form action="@Url.Action("Logout","Home")">
+            <input id="logout" type="submit" value="Logout" style="width:100px"/>
+            </form>
+            <br />
+            <br />
+            <form class="phoneSection">
+                <p>
+                    <strong>Enter a Phone Number to be Validated</strong>
+                </p>
+                <br />
+                <br />
+                <input type="text" name="phoneNumber" id="number" placeholder="+1 876-123-4567" required />
+                <label for="phoneNumber">Phone Number</label>
+                <br />
+
+                <div class="tooltip">
+                    <img src="~/Content/questionMark.png" alt="Tip" width="25px" height="25px"/>
+                    <span class="tooltiptext">
+                        Ensure that the corresponding number prefix is entered first
+                        (+1 for Jamaica ) as well as the area code (876 for Jamaica).
+                    </span>
+                </div>
+                <input type="button" value="Validate Phone Number" onclick="PostServer();" />
+            </form>
+
+            <div class="form-wrap">
+                <div class="tabs">
+                    <h3 class="formatted-tab">
+                        <a class="active" href="#formatted-tab-content">Formatted</a>
+                    </h3>
+                    <h3 class="json-tab">
+                        <a href="#json-tab-content">JSON</a>
+                    </h3>
+                </div>
+                <div class="tabs-content">
+                    <div id="formatted-tab-content" class="active">
+                        <table id="records_table">
+                            <tr id="tr1">
+                                <td>Valid</td>
+                                <td id="1"></td>
+                            </tr>
+                            <tr id="tr2">
+                                <td>Number</td>
+                                <td id="2"></td>
+                            </tr>
+                            <tr id="tr3">
+                                <td>Local Format</td>
+                                <td id="3"></td>
+                            </tr>
+                            <tr id="tr4">
+                                <td>International Format</td>
+                                <td id="4"></td>
+                            </tr>
+                            <tr id="tr5">
+                                <td>Country Prefix</td>
+                                <td id="5"></td>
+                            </tr>
+                            <tr id="tr6">
+                                <td>Country Code</td>
+                                <td id="6"></td>
+                            </tr>
+                            <tr id="tr7">
+                                <td>Country Name</td>
+                                <td id="7"></td>
+                            </tr>
+                            <tr id="tr8">
+                                <td>Location</td>
+                                <td id="8"></td>
+                            </tr>
+                            <tr id="tr9">
+                                <td>Carrier</td>
+                                <td id="9"></td>
+                            </tr>
+                            <tr id="tr10">
+                                <td>Line Type</td>
+                                <td id="10"></td>
+                            </tr>
+                        </table>
+                        <br />
+                    </div>
+                    <div id="json-tab-content">
+                        <p>JSON data to be display here</p>
+                        <textarea id="jsonarea" rows="14" cols="50" readonly></textarea>
+                    </div>
+                </div>
+            </div>
+            <p class="foot">
+                As a reference please see API Documentation
+                <strong><a target="_blank" href="https://numverify.com/documentation#api_response">here</a></strong>.
+            </p>
+        </div>
+    </div>
+    <div>
+    <!--.tabs-content-->
+    </div>
+    <div>
+    <!--.form-wrap-->
+    <!-- <div class="foot"><p>Team War Room &copy 2017</p> -->
+    </div>
+    <div>
+        <input id="username" type="hidden" value="@ViewBag.Message" />
+    </div>
+
+
+    <script>
+        jQuery(document).ready(function ($) {
+            tab = $('.tabs h3 a');
+
+            tab.on('click', function (event) {
+                event.preventDefault();
+                tab.removeClass('active');
+                $(this).addClass('active');
+
+                tab_content = $(this).attr('href');
+                $('div[id$="tab-content"]').removeClass('active');
+                $(tab_content).addClass('active');
+            });
+        });
+
+
+
+
+        function PostServer() {
+            var data = {
+                number: $('#number').val(),
+                username: $('#username').val()
+            }
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:50942/api/verify",
+                dataType: "json",
+                data: data,
+                success: function (data) {
+                    if (Array.isArray(data) == true) {
+                        var content = JSON.stringify(data, null, '\t');
+                        $(function () {
+                            $.each(data, function (i, data) {
+                                var $tr1 = $('#tr1').append($('#1').text(data.valid)).appendTo('#records_table');
+                                var $tr2 = $('#tr2').append($('#2').text(data.number)).appendTo('#records_table');
+                                var $tr3 = $('#tr3').append($('#3').text(data.local_format)).appendTo('#records_table');
+                                var $tr4 = $('#tr4').append($('#4').text(data.international_format)).appendTo('#records_table');
+                                var $tr5 = $('#tr5').append($('#5').text(data.country_prefix)).appendTo('#records_table');
+                                var $tr6 = $('#tr6').append($('#6').text(data.country_code)).appendTo('#records_table');
+                                var $tr7 = $('#tr7').append($('#7').text(data.country_name)).appendTo('#records_table');
+                                var $tr8 = $('#tr8').append($('#8').text(data.location)).appendTo('#records_table');
+                                var $tr9 = $('#tr9').append($('#9').text(data.carrier)).appendTo('#records_table');
+                                var $tr10 = $('#tr10').append($('#10').text(data.line_type)).appendTo('#records_table');
+                                document.getElementById("jsonarea").innerHTML = content;
+                            });
+                        });
+                        window.alert("Information retreived from database!");
+                    }
+                    else {
+                        var content1 = JSON.stringify(data, null, '\t');
+                        var $tr1 = $('#tr1').append($('#1').text(data.valid)).appendTo('#records_table');
+                        var $tr2 = $('#tr2').append($('#2').text(data.number)).appendTo('#records_table');
+                        var $tr3 = $('#tr3').append($('#3').text(data.local_format)).appendTo('#records_table');
+                        var $tr4 = $('#tr4').append($('#4').text(data.international_format)).appendTo('#records_table');
+                        var $tr5 = $('#tr5').append($('#5').text(data.country_prefix)).appendTo('#records_table');
+                        var $tr6 = $('#tr6').append($('#6').text(data.country_code)).appendTo('#records_table');
+                        var $tr7 = $('#tr7').append($('#7').text(data.country_name)).appendTo('#records_table');
+                        var $tr8 = $('#tr8').append($('#8').text(data.location)).appendTo('#records_table');
+                        var $tr9 = $('#tr9').append($('#9').text(data.carrier)).appendTo('#records_table');
+                        var $tr10 = $('#tr10').append($('#10').text(data.line_type)).appendTo('#records_table');
+                        document.getElementById("jsonarea").innerHTML = content1;
+                        window.alert("Information stored in database!")
+                    }
+                },
+            })
+        };
+
+    </script>
+</body>
+</html>
